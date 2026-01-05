@@ -1,25 +1,61 @@
-[gd_scene load_steps=6 format=3 uid="uid://b2uep2fut66xq"]
+[gd_scene load_steps=9 format=3 uid="uid://b2uep2fut66xq"]
 
-[ext_resource type="Script" uid="uid://c67cgki18ia2x" path="res://scripts/combat/combat_entity.gd" id="1_elqb8"]
-[ext_resource type="Script" uid="uid://boig8bdn3k8ar" path="res://scripts/main.gd" id="1_rarhs"]
-[ext_resource type="Resource" uid="uid://dm5qclv2iishs" path="res://scripts/player_stats.tres" id="2_0bbpv"]
+[ext_resource type="Resource" uid="uid://dm5qclv2iishs" path="res://scripts/combat/resources/player_stats.tres" id="2_0bbpv"]
+[ext_resource type="Script" uid="uid://dfqhpmsb7w6vv" path="res://scripts/arena.gd" id="2_jlsqs"]
 [ext_resource type="Script" uid="uid://btd7lj8rvl3mn" path="res://scripts/combat/combat_resolver.gd" id="2_resolver"]
-[ext_resource type="Resource" uid="uid://bps00j0hk2srt" path="res://scripts/dummy_stats.tres" id="3_rarhs"]
+[ext_resource type="Script" uid="uid://bkdi235mlli68" path="res://scripts/player_controller.gd" id="6_nxtc6"]
+[ext_resource type="Resource" uid="uid://dmfljggpj5bun" path="res://scripts/combat/resources/mob_stats.tres" id="7_jlsqs"]
+[ext_resource type="Script" uid="uid://dt8k8tk0pn2vj" path="res://scripts/mob_ai.gd" id="7_nxtc6"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vcsgt"]
+radius = 29.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c01mt"]
+radius = 29.0
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_rarhs")
 
-[node name="CombatWorld" type="Node" parent="."]
+[node name="CombatWorld" type="Node2D" parent="."]
+script = ExtResource("2_jlsqs")
+player_path = NodePath("../Entities/PlayerBody")
+mob_path = NodePath("../Entities/MobBody")
+resolver_path = NodePath("CombatResolver")
 
 [node name="CombatResolver" type="Node" parent="CombatWorld"]
 script = ExtResource("2_resolver")
 
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="Player" type="Node2D" parent="Entities"]
-script = ExtResource("1_elqb8")
+[node name="PlayerBody" type="CharacterBody2D" parent="Entities"]
+position = Vector2(-334, -31)
+script = ExtResource("6_nxtc6")
 stats = ExtResource("2_0bbpv")
 
-[node name="Dummy" type="Node2D" parent="Entities"]
-script = ExtResource("1_elqb8")
-stats = ExtResource("3_rarhs")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/PlayerBody"]
+position = Vector2(-1, 0)
+shape = SubResource("CircleShape2D_vcsgt")
+
+[node name="ColorRect" type="ColorRect" parent="Entities/PlayerBody"]
+offset_left = -21.0
+offset_top = -19.0
+offset_right = 19.0
+offset_bottom = 21.0
+
+[node name="Camera2D" type="Camera2D" parent="Entities/PlayerBody"]
+position = Vector2(-2, -1)
+position_smoothing_enabled = true
+
+[node name="MobBody" type="CharacterBody2D" parent="Entities"]
+position = Vector2(156, 73)
+script = ExtResource("7_nxtc6")
+stats = ExtResource("7_jlsqs")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/MobBody"]
+position = Vector2(-2, 2)
+shape = SubResource("CircleShape2D_c01mt")
+
+[node name="ColorRect" type="ColorRect" parent="Entities/MobBody"]
+offset_left = -21.0
+offset_top = -18.0
+offset_right = 19.0
+offset_bottom = 22.0

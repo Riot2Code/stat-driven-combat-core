@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Stats" load_steps=2 format=3 uid="uid://dmfljggpj5bun"]
+
+[ext_resource type="Script" uid="uid://27i3lns25762" path="res://scripts/stats.gd" id="1_nysvu"]
+
+[resource]
+script = ExtResource("1_nysvu")
+max_hp = 30
+attack = 6
+defense = 2
+accuracy = 65
+evasion = 10
+crit_chance = 0.02
+metadata/_custom_type_script = "uid://27i3lns25762"
