@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://b2uep2fut66xq"]
+
+[ext_resource type="Script" uid="uid://c67cgki18ia2x" path="res://scripts/combat/combat_entity.gd" id="1_elqb8"]
+[ext_resource type="Script" uid="uid://boig8bdn3k8ar" path="res://scripts/main.gd" id="1_rarhs"]
+[ext_resource type="Resource" uid="uid://dm5qclv2iishs" path="res://scripts/player_stats.tres" id="2_0bbpv"]
+[ext_resource type="Script" uid="uid://btd7lj8rvl3mn" path="res://scripts/combat/combat_resolver.gd" id="2_resolver"]
+[ext_resource type="Resource" uid="uid://bps00j0hk2srt" path="res://scripts/dummy_stats.tres" id="3_rarhs"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_rarhs")
+
+[node name="CombatWorld" type="Node" parent="."]
+
+[node name="CombatResolver" type="Node" parent="CombatWorld"]
+script = ExtResource("2_resolver")
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="Player" type="Node2D" parent="Entities"]
+script = ExtResource("1_elqb8")
+stats = ExtResource("2_0bbpv")
+
+[node name="Dummy" type="Node2D" parent="Entities"]
+script = ExtResource("1_elqb8")
+stats = ExtResource("3_rarhs")

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Stats" load_steps=2 format=3 uid="uid://bps00j0hk2srt"]
+
+[ext_resource type="Script" uid="uid://27i3lns25762" path="res://scripts/stats.gd" id="1_tqo4d"]
+
+[resource]
+script = ExtResource("1_tqo4d")
+name = "Dummy"
+max_hp = 200
+hp = 200
+defense = 10
+evasion = 10
+metadata/_custom_type_script = "uid://27i3lns25762"
