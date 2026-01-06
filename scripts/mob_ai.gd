@@ -44,3 +44,6 @@ func _physics_process(_delta: float) -> void:
 		velocity = Vector2.ZERO
 
 	move_and_slide()
+# TODO: attack_range
+# TODO: attack cooldown
+# TODO: emit attack signal

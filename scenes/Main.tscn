@@ -1,9 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://b2uep2fut66xq"]
+[gd_scene load_steps=12 format=3 uid="uid://b2uep2fut66xq"]
 
 [ext_resource type="Resource" uid="uid://dm5qclv2iishs" path="res://scripts/combat/resources/player_stats.tres" id="2_0bbpv"]
 [ext_resource type="Script" uid="uid://dfqhpmsb7w6vv" path="res://scripts/arena.gd" id="2_jlsqs"]
 [ext_resource type="Script" uid="uid://btd7lj8rvl3mn" path="res://scripts/combat/combat_resolver.gd" id="2_resolver"]
+[ext_resource type="Script" uid="uid://crfdob3i0hkqq" path="res://scripts/combat/attack_profile.gd" id="4_q8u5g"]
+[ext_resource type="Resource" uid="uid://bwqe4s5hnmkjt" path="res://scripts/combat/resources/melee.tres" id="5_lhr70"]
 [ext_resource type="Script" uid="uid://bkdi235mlli68" path="res://scripts/player_controller.gd" id="6_nxtc6"]
+[ext_resource type="Resource" uid="uid://dwe2va38w17rc" path="res://scripts/combat/resources/ranged.tres" id="6_wp0k4"]
 [ext_resource type="Resource" uid="uid://dmfljggpj5bun" path="res://scripts/combat/resources/mob_stats.tres" id="7_jlsqs"]
 [ext_resource type="Script" uid="uid://dt8k8tk0pn2vj" path="res://scripts/mob_ai.gd" id="7_nxtc6"]
 
@@ -16,6 +19,7 @@ radius = 29.0
 [node name="Main" type="Node2D"]
 
 [node name="CombatWorld" type="Node2D" parent="."]
+position = Vector2(817, 235)
 script = ExtResource("2_jlsqs")
 player_path = NodePath("../Entities/PlayerBody")
 mob_path = NodePath("../Entities/MobBody")
@@ -25,10 +29,12 @@ resolver_path = NodePath("CombatResolver")
 script = ExtResource("2_resolver")
 
 [node name="Entities" type="Node2D" parent="."]
+position = Vector2(819, 235)
 
 [node name="PlayerBody" type="CharacterBody2D" parent="Entities"]
 position = Vector2(-334, -31)
 script = ExtResource("6_nxtc6")
+attacks = Array[ExtResource("4_q8u5g")]([ExtResource("5_lhr70"), ExtResource("6_wp0k4")])
 stats = ExtResource("2_0bbpv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/PlayerBody"]
