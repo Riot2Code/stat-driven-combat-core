@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemDef" load_steps=2 format=3 uid="uid://5pfql8eug7c4"]
+
+[ext_resource type="Script" uid="uid://debrctvg14jjy" path="res://scripts/items/item_def.gd" id="1_12dga"]
+
+[resource]
+script = ExtResource("1_12dga")
+item_id = "ring_of_godot"
+display_name = "Ring of Godot"
+type = 1
+weight = 10.0
+equip_slots = Array[int]([0, 0])
+metadata/_custom_type_script = "uid://debrctvg14jjy"

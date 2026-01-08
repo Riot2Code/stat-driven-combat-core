@@ -1,0 +1,41 @@
+CURRENT STATE
+-------------
+- Inventory system implemented (counts + weight).
+- Equipment system implemented with real APIs:
+  - try_equip(inventory, item_id, slot)
+  - try_unequip(inventory, slot)
+- No UI yet by design.
+- AttackProfiles + combat resolver intact.
+- Player can hold items; equipping logic is ready but not yet wired to input/UI.
+- Pickup.tscn + drop_item_from_player planned / partially implemented.
+
+IMPORTANT DESIGN DECISIONS
+--------------------------
+- No debug hacks: all equip/unequip/drop actions must go through real APIs.
+- UI (drag/drop) will call the same functions used by temporary hotkeys.
+- Items are Resources (ItemDef); inventory/equipment store item_id references.
+- Weight penalties already affect movement; later extend to combat stats.
+
+NEXT STEPS (IN ORDER)
+---------------------
+1) Add temporary hotkeys:
+   - E → try_equip weapon slot
+   - U → try_unequip weapon slot
+   - Q → drop_item_from_player(item_id, 1)
+   (Only for testing; will be removed when UI exists)
+
+2) Print equipment state after equip/unequip to verify correctness.
+
+3) Finish Pickup.tscn behavior:
+   - On player overlap → add item back to inventory → destroy pickup.
+
+4) After mechanics are verified, build UI:
+   - Inventory grid
+   - Drag item → equipment slot → try_equip
+   - Drag item → world → drop_item_from_player
+
+DO NOT
+------
+- Do NOT add UI before mechanics are proven.
+- Do NOT bypass try_equip / try_unequip.
+- Do NOT let combat logic read inventory directly.

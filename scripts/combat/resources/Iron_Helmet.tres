@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemDef" load_steps=2 format=3 uid="uid://coo1wg2kept84"]
+
+[ext_resource type="Script" uid="uid://debrctvg14jjy" path="res://scripts/items/item_def.gd" id="1_mifd4"]
+
+[resource]
+script = ExtResource("1_mifd4")
+item_id = "short_sword"
+display_name = "Short Sword"
+type = 2
+weight = 120.0
+equip_slots = Array[int]([0])
+metadata/_custom_type_script = "uid://debrctvg14jjy"

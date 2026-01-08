@@ -31,6 +31,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		player.set_attack_index(1)
 		queue_redraw()
 
+	if event.is_action_pressed("drop_test"):
+		drop_item_from_player("ring_godot", 1)
+
 func _handle_attack() -> void:
 	if player == null or mob == null or resolver == null:
 		return
@@ -44,18 +47,12 @@ func _handle_attack() -> void:
 		push_error("Player has no AttackProfile assigned.")
 		return
 
-	# ---- RANGE CHECK ----
 	var dist: float = player.global_position.distance_to(mob.global_position)
 	if dist > profile.range:
 		print("Out of range (%.0f / %.0f)" % [dist, profile.range])
 		return
 
-	var result: CombatResult = resolver.resolve_attack(
-		player.stats,
-		mob.stats,
-		profile
-	)
-
+	var result: CombatResult = resolver.resolve_attack(player.stats, mob.stats, profile)
 	print("%s | %s" % [profile.display_name, result.summary()])
 
 	if mob.is_dead():
@@ -87,6 +84,28 @@ func _respawn_mob() -> void:
 	mob.stats.hp = mob.stats.max_hp
 	mob.global_position = Vector2(700, 350)
 	print("Mob respawned.")
+
+func drop_item_from_player(item_id: String, amount: int = 1) -> void:
+	if player == null:
+		return
+	if player.inventory.get_count(item_id) < amount:
+		return
+
+	var item: ItemDef = player.inventory.defs.get(item_id, null)
+	if item == null:
+		return
+
+	if not player.inventory.remove(item_id, amount):
+		return
+
+	var pickup_scene := preload("res://scenes/Pickup.tscn")
+	var p = pickup_scene.instantiate()
+	p.item = item
+	p.amount = amount
+	p.global_position = player.global_position + Vector2(32, 0)
+	add_child(p)
+
+	print("Dropped:", item.display_name, "x", amount)
 
 func _draw() -> void:
 	if player == null:
