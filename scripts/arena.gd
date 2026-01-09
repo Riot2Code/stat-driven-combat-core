@@ -1,20 +1,30 @@
+#scripts/arena.gd
 extends Node2D
 
 @export var player_path: NodePath
 @export var mob_path: NodePath
 @export var resolver_path: NodePath
+@export var vfx_parent_path: NodePath
 
 @onready var player: PlayerController = get_node_or_null(player_path)
 @onready var mob: MobAI = get_node_or_null(mob_path)
 @onready var resolver: CombatResolver = get_node_or_null(resolver_path)
+@onready var _vfx_parent: Node = get_node_or_null(vfx_parent_path)
+
+
 
 var xp: int = 0
 var xp_to_next: int = 10
+
+const FloatingTextScene := preload("res://scenes/FloatingText.tscn")
 
 func _ready() -> void:
 	if player == null or mob == null or resolver == null:
 		push_error("Arena wiring is missing. Check NodePaths.")
 		return
+
+	if _vfx_parent == null:
+		_vfx_parent = get_tree().current_scene
 
 	mob.set_target(player)
 	print("Arena ready. Kite and press SPACE to attack.")
@@ -54,6 +64,16 @@ func _handle_attack() -> void:
 
 	var result: CombatResult = resolver.resolve_attack(player.stats, mob.stats, profile)
 	print("%s | %s" % [profile.display_name, result.summary()])
+
+	# --- Toy fun layer: immediate feedback ---
+	if result.hit:
+		mob.flash_hit()
+		if result.crit:
+			_spawn_floating_text(mob.global_position + Vector2(0, -24), str(-result.damage), "crit")
+		else:
+			_spawn_floating_text(mob.global_position + Vector2(0, -24), str(-result.damage), "hit")
+	else:
+		_spawn_floating_text(mob.global_position + Vector2(0, -24), "MISS", "miss")
 
 	if mob.is_dead():
 		_on_mob_killed()
@@ -120,3 +140,11 @@ func _draw() -> void:
 		profile.range,
 		Color(1, 0, 0, 0.2)
 	)
+
+func _spawn_floating_text(world_pos: Vector2, msg: String, kind: String) -> void:
+	if FloatingTextScene == null:
+		return
+	var ft = FloatingTextScene.instantiate()
+	_vfx_parent.add_child(ft)
+	ft.global_position = world_pos
+	ft.popup(msg, kind)

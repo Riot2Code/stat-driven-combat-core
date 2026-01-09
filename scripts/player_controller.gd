@@ -4,6 +4,9 @@ extends Actor
 
 @export var move_speed: float = 220.0
 
+# Targeting system
+@onready var targeting: Targeting = $Targeting
+
 # Weight system
 @export var max_weight: float = 300.0
 var inventory: Inventory = Inventory.new()
@@ -17,6 +20,7 @@ var equipment: Equipment = Equipment.new()
 # Attack modes (drag AttackProfile .tres files into this array)
 @export var attacks: Array[AttackProfile] = []
 var attack_index: int = 0
+
 
 func _ready() -> void:
 	super._ready()
@@ -45,6 +49,15 @@ func set_attack_index(i: int) -> void:
 	if a != null:
 		print("Attack mode:", a.display_name)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		#print("CLICK:", get_global_mouse_position())
+		var clicked := _pick_target_at_mouse()
+		if clicked:
+			targeting.set_target(clicked)
+		else:
+			targeting.clear_target()
+
 func _physics_process(_delta: float) -> void:
 	var ratio: float = 0.0
 	if max_weight > 0.0:
@@ -68,3 +81,28 @@ func _weight_multiplier(ratio: float) -> float:
 	if ratio <= 1.0:
 		return 0.65
 	return 0.35
+
+#Helper
+func _pick_target_at_mouse() -> Node:
+	var space := get_world_2d().direct_space_state
+	var pos := get_global_mouse_position()
+
+	var params := PhysicsPointQueryParameters2D.new()
+	params.position = pos
+	params.collide_with_areas = true
+	params.collide_with_bodies = true
+
+	var hits := space.intersect_point(params, 16)
+	#print("HITS:", hits.size())
+
+	for h in hits:
+		var c = h.get("collider")
+		#print("COLLIDER:", c, " groups:", c.get_groups())
+		if c and c.is_in_group("targetable"):
+			# If you clicked a child collider, walk up until the grouped parent
+			var n: Node = c
+			while n and not n.is_in_group("targetable"):
+				n = n.get_parent()
+			return n if n else c
+
+	return null
