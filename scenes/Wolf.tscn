@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://cb5wu0lwd4cm"]
+
+[ext_resource type="Script" uid="uid://dt8k8tk0pn2vj" path="res://scripts/mob_ai.gd" id="1_wvoo0"]
+[ext_resource type="Resource" uid="uid://dmfljggpj5bun" path="res://scripts/combat/resources/mob_stats.tres" id="2_77ind"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c01mt"]
+radius = 29.0
+
+[node name="MobBody" type="CharacterBody2D" groups=["targetable"]]
+input_pickable = true
+script = ExtResource("1_wvoo0")
+stats = ExtResource("2_77ind")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["targetable"]]
+position = Vector2(-2, 2)
+shape = SubResource("CircleShape2D_c01mt")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -21.0
+offset_top = -18.0
+offset_right = 19.0
+offset_bottom = 22.0
+color = Color(0.4203922, 0.052694984, 0.017462365, 1)

@@ -4,6 +4,9 @@
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1")
+player_path = null
+mob_path = null
+arena_path = null
 
 [node name="Margin" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -22,11 +25,6 @@ theme_override_constants/separation = 6
 unique_name_in_owner = true
 layout_mode = 2
 text = "Player"
-
-[node name="MobLabel" type="Label" parent="Margin/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Mob"
 
 [node name="XpLabel" type="Label" parent="Margin/VBox"]
 unique_name_in_owner = true

@@ -60,6 +60,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(_delta: float) -> void:
 	var ratio: float = 0.0
+	if is_dead():
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
 	if max_weight > 0.0:
 		ratio = inventory.total_weight() / max_weight
 

@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_nysvu")
+name = "Wolf"
 max_hp = 30
 attack = 6
 defense = 2

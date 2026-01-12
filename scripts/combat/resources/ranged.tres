@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_equd2")
 display_name = "Ranged"
-range = 220.0
+attack_range = 220.0
 damage_multiplier = 0.7
 accuracy_bonus = -5.0
 metadata/_custom_type_script = "uid://crfdob3i0hkqq"

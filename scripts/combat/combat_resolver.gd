@@ -13,8 +13,8 @@ func _ready() -> void:
 	_rng.seed = rng_seed
 
 func resolve_basic_attack(attacker: Stats, defender: Stats) -> CombatResult:
-	return resolve_attack(attacker, defender, null)
 	var r: CombatResult = CombatResult.new()
+	return resolve_attack(attacker, defender, null)
 	r.attacker_name = attacker.name
 	r.defender_name = defender.name
 
@@ -26,10 +26,10 @@ func resolve_attack(attacker: Stats, defender: Stats, profile: AttackProfile) ->
 	r.defender_name = defender.name
 	r.defender_hp_before = defender.hp
 
-	var acc_bonus: float = 0.0
+	var _acc_bonus: float = 0.0
 	var dmg_mult: float = 1.0
 	if profile != null:
-		acc_bonus = profile.accuracy_bonus
+		_acc_bonus = profile.accuracy_bonus
 		dmg_mult = profile.damage_multiplier
 
 	# ---- HIT CHECK (simple but robust) ----

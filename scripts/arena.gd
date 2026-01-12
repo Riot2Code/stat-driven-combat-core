@@ -1,17 +1,18 @@
-#scripts/arena.gd
+# scripts/arena.gd
 extends Node2D
 
 @export var player_path: NodePath
+# Deprecated: single-mob wiring (kept so older scenes don't break). Multi-mob uses MobSpawner.
 @export var mob_path: NodePath
 @export var resolver_path: NodePath
 @export var vfx_parent_path: NodePath
 
+@export var mob_attack_profile: AttackProfile
+
 @onready var player: PlayerController = get_node_or_null(player_path)
-@onready var mob: MobAI = get_node_or_null(mob_path)
 @onready var resolver: CombatResolver = get_node_or_null(resolver_path)
 @onready var _vfx_parent: Node = get_node_or_null(vfx_parent_path)
-
-
+@onready var spawner: MobSpawner = $MobSpawner
 
 var xp: int = 0
 var xp_to_next: int = 10
@@ -19,14 +20,18 @@ var xp_to_next: int = 10
 const FloatingTextScene := preload("res://scenes/FloatingText.tscn")
 
 func _ready() -> void:
-	if player == null or mob == null or resolver == null:
-		push_error("Arena wiring is missing. Check NodePaths.")
+	if player == null or resolver == null:
+		push_error("Arena wiring is missing. Check player_path / resolver_path NodePaths.")
 		return
 
 	if _vfx_parent == null:
 		_vfx_parent = get_tree().current_scene
 
-	mob.set_target(player)
+	if spawner == null:
+		push_error("MobSpawner node not found. Add a child node named 'MobSpawner'.")
+		return
+
+	spawner.spawn_all(player, _on_mob_attempt_attack)
 	print("Arena ready. Kite and press SPACE to attack.")
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -45,11 +50,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		drop_item_from_player("ring_godot", 1)
 
 func _handle_attack() -> void:
-	if player == null or mob == null or resolver == null:
+	if player == null or resolver == null or spawner == null:
 		return
 
-	if mob.is_dead():
-		print("Mob is dead.")
+	var target: MobAI = spawner.get_nearest_alive(player)
+	if target == null:
+		print("No alive mobs.")
+		return
+
+	if target.is_dead():
+		print("Target is already dead.")
 		return
 
 	var profile: AttackProfile = player.get_attack()
@@ -57,37 +67,38 @@ func _handle_attack() -> void:
 		push_error("Player has no AttackProfile assigned.")
 		return
 
-	var dist: float = player.global_position.distance_to(mob.global_position)
-	if dist > profile.range:
-		print("Out of range (%.0f / %.0f)" % [dist, profile.range])
+	var dist: float = player.global_position.distance_to(target.global_position)
+	if dist > profile.attack_range:
+		print("Out of range (%.0f / %.0f)" % [dist, profile.attack_range])
 		return
 
-	var result: CombatResult = resolver.resolve_attack(player.stats, mob.stats, profile)
+	var result: CombatResult = resolver.resolve_attack(player.stats, target.stats, profile)
 	print("%s | %s" % [profile.display_name, result.summary()])
 
 	# --- Toy fun layer: immediate feedback ---
 	if result.hit:
-		mob.flash_hit()
+		target.flash_hit()
 		if result.crit:
-			_spawn_floating_text(mob.global_position + Vector2(0, -24), str(-result.damage), "crit")
+			_spawn_floating_text(target.global_position + Vector2(0, -24), str(-result.damage), "crit")
 		else:
-			_spawn_floating_text(mob.global_position + Vector2(0, -24), str(-result.damage), "hit")
+			_spawn_floating_text(target.global_position + Vector2(0, -24), str(-result.damage), "hit")
 	else:
-		_spawn_floating_text(mob.global_position + Vector2(0, -24), "MISS", "miss")
+		_spawn_floating_text(target.global_position + Vector2(0, -24), "MISS", "miss")
 
-	if mob.is_dead():
-		_on_mob_killed()
+	if target.is_dead():
+		_on_mob_killed(target)
 
-func _on_mob_killed() -> void:
-	var award: int = 5 + mob.stats.level * 2
+func _on_mob_killed(dead_mob: MobAI) -> void:
+	if spawner != null:
+		spawner.respawn(dead_mob)
+
+	var award: int = 5 + dead_mob.stats.level * 2
 	xp += award
 	print("Gained XP: %d (Total: %d / %d)" % [award, xp, xp_to_next])
 
 	while xp >= xp_to_next:
 		xp -= xp_to_next
 		_level_up()
-
-	_respawn_mob()
 
 func _level_up() -> void:
 	player.stats.level += 1
@@ -99,11 +110,6 @@ func _level_up() -> void:
 
 	xp_to_next = int(round(float(xp_to_next) * 1.35))
 	print("LEVEL UP! Now level %d. Next XP: %d" % [player.stats.level, xp_to_next])
-
-func _respawn_mob() -> void:
-	mob.stats.hp = mob.stats.max_hp
-	mob.global_position = Vector2(700, 350)
-	print("Mob respawned.")
 
 func drop_item_from_player(item_id: String, amount: int = 1) -> void:
 	if player == null:
@@ -137,7 +143,7 @@ func _draw() -> void:
 
 	draw_circle(
 		to_local(player.global_position),
-		profile.range,
+		profile.attack_range,
 		Color(1, 0, 0, 0.2)
 	)
 
@@ -148,3 +154,20 @@ func _spawn_floating_text(world_pos: Vector2, msg: String, kind: String) -> void
 	_vfx_parent.add_child(ft)
 	ft.global_position = world_pos
 	ft.popup(msg, kind)
+
+func _on_mob_attempt_attack(attacker: Actor, target: Actor) -> void:
+	if resolver == null:
+		return
+	if attacker == null or target == null:
+		return
+	if attacker.is_dead() or target.is_dead():
+		return
+	if mob_attack_profile == null:
+		push_error("mob_attack_profile is not set on arena.gd")
+		return
+
+	var result: CombatResult = resolver.resolve_attack(attacker.stats, target.stats, mob_attack_profile)
+	print("%s | %s" % [mob_attack_profile.display_name, result.summary()])
+
+	if target.is_dead():
+		print("%s died." % target.stats.name)

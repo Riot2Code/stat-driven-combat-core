@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AttackProfile" load_steps=2 format=3 uid="uid://ba38gurt6y8xr"]
+
+[ext_resource type="Script" uid="uid://crfdob3i0hkqq" path="res://scripts/combat/attack_profile.gd" id="1_h42ua"]
+
+[resource]
+script = ExtResource("1_h42ua")
+display_name = "Mob Melee"
+attack_range = 70.0
+damage_multiplier = 0.6
+metadata/_custom_type_script = "uid://crfdob3i0hkqq"

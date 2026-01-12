@@ -1,8 +1,10 @@
 [gd_scene load_steps=17 format=3 uid="uid://b2uep2fut66xq"]
 
 [ext_resource type="Resource" uid="uid://dm5qclv2iishs" path="res://scripts/combat/resources/player_stats.tres" id="2_0bbpv"]
+[ext_resource type="Resource" uid="uid://ba38gurt6y8xr" path="res://scripts/combat/resources/mob_melee.tres" id="2_3p2gp"]
 [ext_resource type="Script" uid="uid://dfqhpmsb7w6vv" path="res://scripts/arena.gd" id="2_jlsqs"]
 [ext_resource type="Script" uid="uid://btd7lj8rvl3mn" path="res://scripts/combat/combat_resolver.gd" id="2_resolver"]
+[ext_resource type="Script" uid="uid://bm56h5i4v5qd3" path="res://scripts/world/mob_spawner.gd" id="4_3p2gp"]
 [ext_resource type="Resource" uid="uid://coo1wg2kept84" path="res://scripts/combat/resources/Iron_Helmet.tres" id="4_bjd11"]
 [ext_resource type="Script" uid="uid://crfdob3i0hkqq" path="res://scripts/combat/attack_profile.gd" id="4_q8u5g"]
 [ext_resource type="Resource" uid="uid://bwqe4s5hnmkjt" path="res://scripts/combat/resources/melee.tres" id="5_lhr70"]
@@ -10,15 +12,11 @@
 [ext_resource type="Resource" uid="uid://b3w1pwcodj8cd" path="res://scripts/combat/resources/Short_Sword.tres" id="6_mwfav"]
 [ext_resource type="Script" uid="uid://bkdi235mlli68" path="res://scripts/player_controller.gd" id="6_nxtc6"]
 [ext_resource type="Resource" uid="uid://dwe2va38w17rc" path="res://scripts/combat/resources/ranged.tres" id="6_wp0k4"]
-[ext_resource type="Resource" uid="uid://dmfljggpj5bun" path="res://scripts/combat/resources/mob_stats.tres" id="7_jlsqs"]
-[ext_resource type="Script" uid="uid://dt8k8tk0pn2vj" path="res://scripts/mob_ai.gd" id="7_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://brqbx1aol2srb" path="res://scenes/HUD.tscn" id="8_hud"]
 [ext_resource type="Script" uid="uid://dycc2yschclmw" path="res://scripts/targeting.gd" id="11_mwfav"]
+[ext_resource type="PackedScene" uid="uid://cb5wu0lwd4cm" path="res://scenes/Wolf.tscn" id="13_mwfav"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vcsgt"]
-radius = 29.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_c01mt"]
 radius = 29.0
 
 [node name="Main" type="Node2D"]
@@ -27,12 +25,19 @@ radius = 29.0
 position = Vector2(817, 235)
 script = ExtResource("2_jlsqs")
 player_path = NodePath("../Entities/PlayerBody")
-mob_path = NodePath("../Entities/MobBody")
 resolver_path = NodePath("CombatResolver")
 vfx_parent_path = NodePath("../Entities")
+mob_attack_profile = ExtResource("2_3p2gp")
 
 [node name="CombatResolver" type="Node" parent="CombatWorld"]
 script = ExtResource("2_resolver")
+
+[node name="MobSpawner" type="Node2D" parent="CombatWorld"]
+position = Vector2(14, -51)
+script = ExtResource("4_3p2gp")
+mob_scene = ExtResource("13_mwfav")
+mob_count = 2
+spawn_center = Vector2(700, 350)
 
 [node name="Entities" type="Node2D" parent="."]
 position = Vector2(819, 235)
@@ -63,24 +68,6 @@ position_smoothing_enabled = true
 [node name="Targeting" type="Node" parent="Entities/PlayerBody"]
 script = ExtResource("11_mwfav")
 
-[node name="MobBody" type="CharacterBody2D" parent="Entities" groups=["targetable"]]
-position = Vector2(156, 73)
-input_pickable = true
-script = ExtResource("7_nxtc6")
-stats = ExtResource("7_jlsqs")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/MobBody" groups=["targetable"]]
-position = Vector2(-2, 2)
-shape = SubResource("CircleShape2D_c01mt")
-
-[node name="ColorRect" type="ColorRect" parent="Entities/MobBody"]
-offset_left = -21.0
-offset_top = -18.0
-offset_right = 19.0
-offset_bottom = 22.0
-color = Color(0.4203922, 0.052694984, 0.017462365, 1)
-
 [node name="HUD" parent="." instance=ExtResource("8_hud")]
 player_path = NodePath("../Entities/PlayerBody")
-mob_path = NodePath("../Entities/MobBody")
 arena_path = NodePath("../CombatWorld")

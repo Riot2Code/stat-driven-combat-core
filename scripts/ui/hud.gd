@@ -5,14 +5,11 @@ extends CanvasLayer
 @export var mob_path: NodePath
 @export var arena_path: NodePath
 
-@onready var combat_log: CombatLog = $Panel/CombatLog
-
 @onready var _player := get_node_or_null(player_path)
 @onready var _mob := get_node_or_null(mob_path)
 @onready var _arena := get_node_or_null(arena_path)
 
 @onready var lbl_player := %PlayerLabel
-@onready var lbl_mob := %MobLabel
 @onready var lbl_xp := %XpLabel
 @onready var lbl_mode := %ModeLabel
 @onready var lbl_weight := %WeightLabel
@@ -43,13 +40,7 @@ func _process(_delta: float) -> void:
 		lbl_player.text = "Player: (not wired)"
 		lbl_weight.text = ""
 
-	if _mob != null and _mob.stats != null:
-		lbl_mob.text = "Mob L%d  HP %d/%d  ATK %d  DEF %d" % [
-			_mob.stats.level, _mob.stats.hp, _mob.stats.max_hp,
-			_mob.stats.attack, _mob.stats.defense
-		]
-	else:
-		lbl_mob.text = "Mob: (not wired)"
+
 
 	if _arena != null:
 		if "xp" in _arena and "xp_to_next" in _arena:
